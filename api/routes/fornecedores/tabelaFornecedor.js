@@ -1,8 +1,9 @@
 const modelo = require('./modeloTabela')
+const NaoEncontrado = require('../../errors/NaoEncontrado')
 
 module.exports = {
     listar() {
-        return modelo.findAll()
+        return modelo.findAll({ raw: true })
     },
 
     async listarId(id) {
@@ -13,7 +14,7 @@ module.exports = {
         })
 
         if (!resultado) {
-            throw new Error('Fornecedor não encontrado')
+            throw new NaoEncontrado()
         }
 
         return resultado
@@ -30,5 +31,11 @@ module.exports = {
                 where: { id: id }
             }
         )
+    },
+
+    remover(id) {
+        modelo.destroy({
+            where: { id: id }
+        })
     }
 }

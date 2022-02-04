@@ -1,4 +1,6 @@
 const tabelaFornecedor = require('./tabelaFornecedor')
+const CampoInvalido = require('../../errors/CampoInvalido')
+const DadosNaoFornecidos = require('../../errors/DadosNaoFornecidos')
 
 class Fornecedor {
     constructor({ id, empresa, email, categoria, dataCriacao, dataAtualizacao, versao }) {
@@ -12,6 +14,7 @@ class Fornecedor {
     }
 
     async criar() {
+        this.validar()
         const resultado = await tabelaFornecedor.inserir({
             empresa: this.empresa,
             email: this.email,
@@ -47,10 +50,26 @@ class Fornecedor {
         })
 
         if (Object.keys(dados).length === 0) {
-            throw new Error('Um ou mais campos está vazio!')
+            throw new DadosNaoFornecidos()
         }
 
         await tabelaFornecedor.atualizar(this.id, dados)
+    }
+
+    async remover() {
+        return tabelaFornecedor.remover(this.id)
+    }
+
+    validar() {
+        const campos = ['empresa', 'email', 'categoria']
+
+        campos.forEach((campo) => {
+            const valor = this[campo]
+
+            if (typeof (valor) !== 'string' || valor.length === 0) {
+                throw new CampoInvalido(campo)
+            }
+        })
     }
 }
 
