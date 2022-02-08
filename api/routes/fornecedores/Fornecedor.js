@@ -1,4 +1,4 @@
-const tabelaFornecedor = require('./tabelaFornecedor')
+const tabela = require('./tabela')
 const CampoInvalido = require('../../errors/CampoInvalido')
 const DadosNaoFornecidos = require('../../errors/DadosNaoFornecidos')
 
@@ -15,7 +15,7 @@ class Fornecedor {
 
     async criar() {
         this.validar()
-        const resultado = await tabelaFornecedor.inserir({
+        const resultado = await tabela.inserir({
             empresa: this.empresa,
             email: this.email,
             categoria: this.categoria
@@ -27,7 +27,7 @@ class Fornecedor {
     }
 
     async carregar() {
-        const resultado = await tabelaFornecedor.listarId(this.id)
+        const resultado = await tabela.listarId(this.id)
         this.empresa = resultado.empresa
         this.email = resultado.email
         this.categoria = resultado.categoria
@@ -37,7 +37,7 @@ class Fornecedor {
     }
 
     async atualizar() {
-        await tabelaFornecedor.listarId(this.id)
+        await tabela.listarId(this.id)
 
         const campos = ['empresa', 'email', 'categoria']
         const dados = {}
@@ -53,11 +53,11 @@ class Fornecedor {
             throw new DadosNaoFornecidos()
         }
 
-        await tabelaFornecedor.atualizar(this.id, dados)
+        await tabela.atualizar(this.id, dados)
     }
 
     async remover() {
-        return tabelaFornecedor.remover(this.id)
+        return tabela.remover(this.id)
     }
 
     validar() {
