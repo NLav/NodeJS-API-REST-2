@@ -4,18 +4,30 @@ const Fornecedor = require('./Fornecedor')
 const SerializadorFornecedor = require('../../Serializador').SerializadorFornecedor
 const roteadorProdutos = require('../produtos')
 
-roteador.get('/', async (req, res) => {
-    const resultados = await tabela.listar()
-    const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'))
-
-    res.status(200).send(serializador.serializar(resultados))
+roteador.options('/', (req, res) => {
+    res.set('Access-Control-Allow-Methods', 'GET', 'POST')
+    res.set('Access-Control-Allow-Heagers', 'Content-Type')
+    res.status(204).end()
 })
 
-roteador.get('/:id', async (req, res, next) => {
+roteador.options('/:idFornecedor', (req, res) => {
+    res.set('Access-Control-Allow-Methods', 'GET', 'PUT', 'DELETE')
+    res.set('Access-Control-Allow-Heagers', 'Content-Type')
+    res.status(204).end()
+})
+
+roteador.get('/', async (req, res) => {
+    const fornecedores = await tabela.listar()
+    const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'),  ['categoria'])
+
+    res.status(200).send(serializador.serializar(fornecedores))
+})
+
+roteador.get('/:idFornecedor', async (req, res, next) => {
     try {
-        const id = req.params.id
+        const id = req.params.idFornecedor
         const fornecedor = new Fornecedor({ id: id })
-        const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'), ['email', 'dataCriacao', 'dataAtualizacao', 'versao'])
+        const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'), ['categoria', 'email', 'dataCriacao', 'dataAtualizacao', 'versao'])
 
         await fornecedor.carregar()
 
@@ -28,7 +40,7 @@ roteador.get('/:id', async (req, res, next) => {
 roteador.post('/', async (req, res, next) => {
     try {
         const fornecedor = new Fornecedor(req.body)
-        const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'))
+        const serializador = new SerializadorFornecedor(res.getHeader('Content-Type'), ['categoria'])
 
         await fornecedor.criar()
 
@@ -38,9 +50,9 @@ roteador.post('/', async (req, res, next) => {
     }
 })
 
-roteador.put('/:id', async (req, res, next) => {
+roteador.put('/:idFornecedor', async (req, res, next) => {
     try {
-        const id = req.params.id
+        const id = req.params.idFornecedor
         const fornecedor = new Fornecedor(Object.assign({}, req.body, { id: id }))
 
         await fornecedor.atualizar()
@@ -51,13 +63,13 @@ roteador.put('/:id', async (req, res, next) => {
     }
 })
 
-roteador.delete('/:id', async (req, res, next) => {
+roteador.delete('/:idFornecedor', async (req, res, next) => {
     try {
-        const id = req.params.id
+        const id = req.params.idFornecedor
         const fornecedor = new Fornecedor({ id: id })
 
         await fornecedor.carregar()
-        await fornecedor.remover()
+        await fornecedor.deletar()
 
         res.status(204).end()
     } catch (error) {

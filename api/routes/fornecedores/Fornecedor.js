@@ -56,8 +56,8 @@ class Fornecedor {
         await tabela.atualizar(this.id, dados)
     }
 
-    async remover() {
-        return tabela.remover(this.id)
+    async deletar() {
+        return tabela.deletar(this.id)
     }
 
     validar() {

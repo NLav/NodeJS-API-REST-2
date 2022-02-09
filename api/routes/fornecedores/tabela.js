@@ -2,6 +2,10 @@ const modelo = require('./modelo')
 const NaoEncontrado = require('../../errors/NaoEncontrado')
 
 module.exports = {
+    inserir(fornecedor) {
+        return modelo.create(fornecedor)
+    },
+
     listar() {
         return modelo.findAll({ raw: true })
     },
@@ -14,14 +18,10 @@ module.exports = {
         })
 
         if (!resultado) {
-            throw new NaoEncontrado()
+            throw new NaoEncontrado('Fornecedor')
         }
 
         return resultado
-    },
-
-    inserir(fornecedor) {
-        return modelo.create(fornecedor)
     },
 
     atualizar(id, dados) {
@@ -33,7 +33,7 @@ module.exports = {
         )
     },
 
-    remover(id) {
+    deletar(id) {
         modelo.destroy({
             where: { id: id }
         })
